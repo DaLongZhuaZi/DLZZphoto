@@ -6,27 +6,10 @@ on:
       - 'v*'
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: 创建发布
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: 版本 ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-  
-  build-android:
-    needs: create-release
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: 设置Java
         uses: actions/setup-java@v3
@@ -47,44 +30,20 @@ jobs:
       - name: 构建APK
         run: flutter build apk --release
       
-      - name: 上传APK到发布
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-release.apk
-          asset_name: DLZZphoto-${{ github.ref_name }}.apk
-          asset_content_type: application/vnd.android.package-archive
-  
-  build-web:
-    needs: create-release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: 设置Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.16.0'
-          channel: 'stable'
-          cache: true
-      
-      - name: 获取依赖
-        run: flutter pub get
-      
       - name: 构建Web
         run: flutter build web --release
       
       - name: 打包Web构建
         run: cd build/web && zip -r ../../web-build.zip .
       
-      - name: 上传Web构建到发布
-        uses: actions/upload-release-asset@v1
+      - name: 创建发布并上传资源
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: web-build.zip
-          asset_name: DLZZphoto-web-${{ github.ref_name }}.zip
-          asset_content_type: application/zip 
+          name: 版本 ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            web-build.zip 
