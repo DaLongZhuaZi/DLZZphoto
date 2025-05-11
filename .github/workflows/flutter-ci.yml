@@ -1,0 +1,88 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 设置Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+          cache: true
+      
+      - name: 获取依赖
+        run: flutter pub get
+      
+      - name: 检查代码格式
+        run: flutter format --set-exit-if-changed .
+      
+      - name: 分析代码
+        run: flutter analyze
+      
+      - name: 运行测试
+        run: flutter test
+
+  build-android:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 设置Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: 设置Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+          cache: true
+      
+      - name: 获取依赖
+        run: flutter pub get
+      
+      - name: 构建APK
+        run: flutter build apk --release
+      
+      - name: 上传APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
+  build-web:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 设置Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+          cache: true
+      
+      - name: 获取依赖
+        run: flutter pub get
+      
+      - name: 构建Web
+        run: flutter build web --release
+      
+      - name: 上传Web构建
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: build/web/ 

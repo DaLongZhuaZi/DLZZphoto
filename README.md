@@ -1,5 +1,8 @@
 # 照片库应用 (DLZZphoto)
 
+![Flutter CI](https://github.com/DaLongZhuaZi/DLZZphoto/workflows/Flutter%20CI/badge.svg)
+![部署Web版本](https://github.com/DaLongZhuaZi/DLZZphoto/workflows/部署Web版本/badge.svg)
+
 一款功能丰富的照片和视频管理应用，支持本地和远程媒体文件浏览。
 
 ## 主要功能
