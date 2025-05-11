@@ -12,12 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: 缓存Flutter SDK
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: flutter-linux-stable-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            flutter-linux-stable-${{ runner.os }}-
+      
+      - name: 缓存pub依赖
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+      
       - name: 设置Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.0'
           channel: 'stable'
           cache: true
+      
+      - name: 调试环境
+        run: |
+          flutter doctor -v
+          flutter --version
       
       - name: 获取依赖
         run: flutter pub get
@@ -43,6 +64,22 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
       
+      - name: 缓存Flutter SDK
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: flutter-linux-stable-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            flutter-linux-stable-${{ runner.os }}-
+      
+      - name: 缓存pub依赖
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+      
       - name: 设置Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -67,6 +104,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: 缓存Flutter SDK
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: flutter-linux-stable-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            flutter-linux-stable-${{ runner.os }}-
+      
+      - name: 缓存pub依赖
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
       
       - name: 设置Flutter
         uses: subosito/flutter-action@v2
