@@ -1,0 +1,52 @@
+name: photo_gallery
+description: 一款支持多种格式图片和视频查看的相册应用
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.5
+  provider: ^6.0.5
+  path_provider: ^2.1.1
+  permission_handler: ^10.4.3
+  photo_view: ^0.14.0
+  video_player: ^2.7.0
+  chewie: ^1.7.1
+  flutter_staggered_grid_view: ^0.7.0
+  intl: ^0.19.0
+  http: ^1.1.0
+  dio: ^5.3.2
+  connectivity_plus: ^4.0.2
+  shared_preferences: ^2.2.0
+  flutter_secure_storage: ^8.0.0
+  image_picker: ^1.0.4
+  cached_network_image: ^3.2.3
+  flutter_cache_manager: ^3.3.1
+  ftpconnect: ^2.0.5
+  webdav_client: ^1.1.7
+  flutter_svg: ^2.0.7
+  image_compare: ^1.1.0
+  flutter_image_compress: ^2.0.4
+  path: ^1.8.3
+  url_launcher: ^6.1.14
+  flutter_displaymode: ^0.6.0
+  device_info_plus: ^9.0.3
+  network_info_plus: ^4.0.2
+  ping_discover_network_forked: ^0.0.1
+  uuid: ^3.0.7
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/ 
