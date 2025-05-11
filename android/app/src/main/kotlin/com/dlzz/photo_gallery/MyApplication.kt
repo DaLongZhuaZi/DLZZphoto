@@ -1,4 +1,4 @@
-package com.example.photo_gallery
+package com.dlzz.photo_gallery
 
 import io.flutter.app.FlutterApplication
 import io.flutter.embedding.engine.FlutterEngine

@@ -1,4 +1,4 @@
-package com.example.photo_gallery
+package com.dlzz.photo_gallery
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -9,4 +9,4 @@ class MainActivity : FlutterActivity() {
         return FlutterEngineCache.getInstance().get("my_engine_id")
             ?: super.provideFlutterEngine(context)
     }
-}
+} 
