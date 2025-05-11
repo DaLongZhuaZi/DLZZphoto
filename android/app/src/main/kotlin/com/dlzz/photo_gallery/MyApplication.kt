@@ -4,10 +4,9 @@ import io.flutter.app.FlutterApplication
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
-import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugins.GeneratedPluginRegistrant
 
-class MyApplication : FlutterApplication(), PluginRegistry.PluginRegistrantCallback {
+class MyApplication : FlutterApplication() {
     
     lateinit var flutterEngine : FlutterEngine
 
@@ -27,12 +26,5 @@ class MyApplication : FlutterApplication(), PluginRegistry.PluginRegistrantCallb
         
         // 注册插件
         GeneratedPluginRegistrant.registerWith(flutterEngine)
-    }
-
-    override fun registerWith(registry: PluginRegistry?) {
-        // 兼容旧插件注册方式
-        if (registry != null) {
-            GeneratedPluginRegistrant.registerWith(flutterEngine)
-        }
     }
 } 
