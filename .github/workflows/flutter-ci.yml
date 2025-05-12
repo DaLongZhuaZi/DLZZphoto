@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  FLUTTER_VERSION: '3.16.0'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,9 +19,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /opt/hostedtoolcache/flutter
-          key: flutter-linux-stable-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          key: flutter-linux-stable-${{ env.FLUTTER_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
-            flutter-linux-stable-${{ runner.os }}-
+            flutter-linux-stable-${{ env.FLUTTER_VERSION }}-${{ runner.os }}-
       
       - name: 缓存pub依赖
         uses: actions/cache@v3
@@ -31,7 +34,7 @@ jobs:
       - name: 设置Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
       
@@ -41,7 +44,22 @@ jobs:
           flutter --version
       
       - name: 获取依赖
+        id: pub-get
+        continue-on-error: true
         run: flutter pub get
+        timeout-minutes: 5
+      
+      - name: 重试获取依赖 (1)
+        if: steps.pub-get.outcome == 'failure'
+        id: pub-get-retry-1
+        continue-on-error: true
+        run: flutter pub get
+        timeout-minutes: 5
+      
+      - name: 重试获取依赖 (2)
+        if: steps.pub-get-retry-1.outcome == 'failure'
+        run: flutter pub get
+        timeout-minutes: 5
       
       - name: 检查代码格式
         run: flutter format --set-exit-if-changed .
@@ -68,9 +86,19 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /opt/hostedtoolcache/flutter
-          key: flutter-linux-stable-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          key: flutter-linux-stable-${{ env.FLUTTER_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
-            flutter-linux-stable-${{ runner.os }}-
+            flutter-linux-stable-${{ env.FLUTTER_VERSION }}-${{ runner.os }}-
+      
+      - name: 缓存Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
       
       - name: 缓存pub依赖
         uses: actions/cache@v3
@@ -83,21 +111,38 @@ jobs:
       - name: 设置Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
       
       - name: 获取依赖
+        id: android-pub-get
+        continue-on-error: true
         run: flutter pub get
+        timeout-minutes: 5
+      
+      - name: 重试获取依赖 (1)
+        if: steps.android-pub-get.outcome == 'failure'
+        id: android-pub-get-retry-1
+        continue-on-error: true
+        run: flutter pub get
+        timeout-minutes: 5
+      
+      - name: 重试获取依赖 (2)
+        if: steps.android-pub-get-retry-1.outcome == 'failure'
+        run: flutter pub get
+        timeout-minutes: 5
       
       - name: 构建APK
         run: flutter build apk --release
+        timeout-minutes: 15
       
       - name: 上传APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: photo-gallery-v${{ github.run_number }}-flutter-${{ env.FLUTTER_VERSION }}
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
           
   build-web:
     needs: build
@@ -109,9 +154,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /opt/hostedtoolcache/flutter
-          key: flutter-linux-stable-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          key: flutter-linux-stable-${{ env.FLUTTER_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: |
-            flutter-linux-stable-${{ runner.os }}-
+            flutter-linux-stable-${{ env.FLUTTER_VERSION }}-${{ runner.os }}-
       
       - name: 缓存pub依赖
         uses: actions/cache@v3
@@ -124,18 +169,35 @@ jobs:
       - name: 设置Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
       
       - name: 获取依赖
+        id: web-pub-get
+        continue-on-error: true
         run: flutter pub get
+        timeout-minutes: 5
+      
+      - name: 重试获取依赖 (1)
+        if: steps.web-pub-get.outcome == 'failure'
+        id: web-pub-get-retry-1
+        continue-on-error: true
+        run: flutter pub get
+        timeout-minutes: 5
+      
+      - name: 重试获取依赖 (2)
+        if: steps.web-pub-get-retry-1.outcome == 'failure'
+        run: flutter pub get
+        timeout-minutes: 5
       
       - name: 构建Web
         run: flutter build web --release
+        timeout-minutes: 10
       
       - name: 上传Web构建
         uses: actions/upload-artifact@v4
         with:
-          name: web-build
-          path: build/web/ 
+          name: web-build-v${{ github.run_number }}-flutter-${{ env.FLUTTER_VERSION }}
+          path: build/web/
+          retention-days: 14 
